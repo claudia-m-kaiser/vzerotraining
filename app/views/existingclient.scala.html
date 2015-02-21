@@ -1,0 +1,41 @@
+@(Token:String)
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Existing Customer</title>
+        <link href="/assets/stylesheets/bootstrap.min.css" rel="stylesheet">
+        <link href="/assets/stylesheets/styles.css" rel="stylesheet">
+    </head>
+    <body>
+        <script src="https://js.braintreegateway.com/v2/braintree.js"></script>
+        <div class="container marketing">
+            <div href="#payment" id="payment" class="row">
+                <div class="col-md-8 text-left">
+                    <form role="form" id="checkout" action ="/new-future-payment" method="post">
+
+                        <p>Click the PayPal button or enter your card details:</p>
+                        <div class="form-group">
+                            <div class="input-group" id="dropin-ui"></div>
+                        </div>
+                        <input type="submit" name="Pay" id="Pay" value="Pay" class="btn btn-large btn-primary pull-left">
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <script>
+
+            braintree.setup("@Token", "dropin", {
+                  container: "dropin-ui",
+                    paypal: {
+                                displayName: "Test Merchant"
+                            }
+                });
+
+        </script>
+    </body>
+
+</html>

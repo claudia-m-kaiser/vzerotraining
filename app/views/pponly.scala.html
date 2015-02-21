@@ -1,0 +1,37 @@
+@(Token:String)
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>PayPal Only</title>
+        <link href="/assets/stylesheets/bootstrap.min.css" rel="stylesheet">
+        <link href="/assets/stylesheets/styles.css" rel="stylesheet">
+    </head>
+    <body>
+        <script src="https://js.braintreegateway.com/v2/braintree.js"></script>
+        <div href="#payment" id="payment" class="row">
+            <div class="col-md-8 text-left">
+                <form role="form" id="checkout" action ="/new-single-payment" method="post">
+
+                    <p>Click the PayPal button:</p>
+                    <div class="form-group">
+                        <div class="input-group" id="dropin-ui"></div>
+                    </div>
+                    <input type="submit" name="Pay" id="Pay" value="Pay" class="btn btn-large btn-primary pull-left">
+                </form>
+            </div>
+        </div>
+
+
+        <script>
+
+            braintree.setup("@Token", "paypal", {
+                  container: "dropin-ui",
+                  displayName: "Trick or Treat"
+                });
+
+        </script>
+    </body>
+
+</html>

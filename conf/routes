@@ -1,0 +1,41 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Pages
+GET         /                                            controllers.Application.index()
+GET         /single                                      controllers.Application.SinglePaymentPage()
+GET         /future                                      controllers.Application.FuturePaymentPage()
+
+
+# Sandbox Endpoints for client tokens
+GET         /sandbox/client_token/:customerId            controllers.Application.SandboxClientToken(customerId:String)
+GET         /existingclient                              controllers.Application.ExistingClient()
+
+# Production Endpoints for client tokens
+GET         /production/client_token/:customerId         controllers.Application.ProductionClientToken(customerId:String)
+
+# Sandbox use case endpoints
+POST        /new-single-payment                          controllers.Application.NewSinglePayment()
+POST        /new-future-payment                          controllers.Application.NewFuturePayment()
+POST        /createcustomer                              controllers.Application.CreateCustomer()
+POST        /sandbox/process-mobile-payment              controllers.Application.SandboxProcessMobilePayment()
+
+# Production use case endpoints
+POST        /production/process-mobile-payment           controllers.Application.ProductionProcessMobilePayment()
+
+# UI Options
+GET         /shortcut                                    controllers.Application.Shortcut()
+GET         /paypal-only                                 controllers.Application.PayPalOnly()
+
+# Refunds
+#GET         /fullrefund                                  controllers.Application.Refund()
+
+# Javascript routing for AJAX call
+GET         /assets/javascripts/routes                   controllers.Application.javascriptRoutes()
+
+# Map static resources from the /public folder to the /assets URL path
+GET         /assets/*file                                controllers.Assets.at(path="/public", file)
+GET         /assets/javascripts/bootstrap.min.js         controllers.Assets.at(path="/public", file="javascripts/bootstrap.min.js")
+GET         /assets/stylesheets/bootstrap.min.css        controllers.Assets.at(path="/public", file="stylesheets/bootstrap.min.css")
+GET         /assets/stylesheets/styles.css               controllers.Assets.at(path="/public", file="stylesheets/styles.css")

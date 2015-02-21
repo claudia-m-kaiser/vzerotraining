@@ -1,0 +1,126 @@
+@(Token:String)
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Shortcut</title>
+        <link href="/assets/stylesheets/bootstrap.min.css" rel="stylesheet">
+        <link href="/assets/stylesheets/styles.css" rel="stylesheet">
+        <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script
+    </head>
+    <body>
+        <script type="text/javascript" src="@routes.Application.javascriptRoutes"></script>
+        <script type="text/javascript" src="@routes.Application.javascriptRoutes"></script>
+        <script src="https://js.braintreegateway.com/v2/braintree.js"></script>
+        <div class="container marketing">
+                <div id="PayPalSignUp" href="#PayPalSignUp" class="row">
+
+                    <form id="checkout" method="post">
+                        <h4>Use your PayPal account</h4>
+                        <div id="dropin"></div>
+                    </form>
+                </div>
+                <div id="ManualSignUp" href="#ManualSignUp" class="row">
+                    <form id="customerForm" role="form" method="post">
+                        <h4 id="signuptext">Or, sign up here.</h4>
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label for="InputFirstName">First Name</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" name="InputFirstName" id="InputFirstName" placeholder="Enter your first name" >
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="InputLastName">Last Name</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" name="InputLastName" id="InputLastName" placeholder="Enter your last name" >
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="InputEmail">Enter Email</label>
+                                <div class="input-group">
+                                    <input type="email" class="form-control" id="InputEmail" name="InputEmail" placeholder="Enter email" >
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="InputAddress">Enter Street Address</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="InputAddress" name="InputAddress" placeholder="Enter your street address" >
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="InputSuburb">Enter Suburb</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="InputSuburb" name="InputSuburb" placeholder="Enter your suburb" >
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="InputSuburb">Enter Postcode</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="InputPostcode" name="InputPostcode" placeholder="Enter your postcode" >
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="InputState">Enter State</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="InputState" name="InputState" placeholder="Enter your state" >
+                                </div>
+                            </div>
+
+                            <input type="text" class="form-control" name="payment_method_nonce" id="payment_method_nonce" style="visibility: hidden">
+
+                            <input type="button" name="submit" id="createCustomerBtn" value="Submit" class="btn btn-info pull-left">
+                        </div>
+                    </form>
+                </div>
+        </div>
+
+        <script>
+
+            braintree.setup("@Token", "paypal", {
+                  container: "checkout",
+                  displayName: "Trick or Treat",
+                  enableShippingAddress: true,
+                  onSuccess: function(nonce, email, shippingAddress) {
+                      document.getElementById("payment_method_nonce").value = nonce;
+                      document.getElementById("InputEmail").value = email;
+                      writeAddress(shippingAddress)}
+                });
+
+
+            function writeAddress(d) {
+                document.getElementById("signuptext").innerHTML = 'Please check your details';
+                document.getElementById("InputFirstName").value = d.recipient_name;
+                document.getElementById("InputAddress").value = d.street_address;
+                document.getElementById("InputSuburb").value = d.locality;
+                document.getElementById("InputPostcode").value = d.postal_code;
+                document.getElementById("InputState").value = d.region;
+            }
+
+            var createCustomer = function() {
+                jsRoutes.controllers.Application.CreateCustomer().ajax({
+                    data: $("#customerForm").serialize(),
+                    type : 'POST',
+                    success: function(data) {
+
+
+                        alert(data);
+
+
+                    },
+                    error: function() {
+
+
+                        alert("Error!");
+
+                    }
+                })
+            };
+
+            $('#createCustomerBtn').click(createCustomer);
+
+        </script>
+    </body>
+
+</html>
