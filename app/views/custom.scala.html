@@ -1,0 +1,37 @@
+@(Token:String)
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Custom</title>
+        <link href="/assets/stylesheets/bootstrap.min.css" rel="stylesheet">
+        <link href="/assets/stylesheets/styles.css" rel="stylesheet">
+        <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script
+    </head>
+    <body>
+        <script type="text/javascript" src="@routes.Application.javascriptRoutes"></script>
+        <script type="text/javascript" src="@routes.Application.javascriptRoutes"></script>
+        <script src="https://js.braintreegateway.com/v2/braintree.js"></script>
+        <div class="container marketing">
+            <div id="CreditCard" href="#CreditCard" class="row">
+                <form id="checkout" action="/new-single-payment" method="post">
+                    <label>Credit Card Number: </label>
+                    <input data-braintree-name="number" value="4111111111111111"><br>
+                    <label>Expiration Date: </label>
+                    <input data-braintree-name="expiration_date" value="10/20"><br>
+                    <label>CVV: </label>
+                    <input data-braintree-name="cvv" value="100"><br>
+                    <input type="submit" id="submit" value="Pay">
+                </form>
+            </div>
+        </div>
+
+        <script>
+
+        braintree.setup("@Token", "custom", {id: "checkout"});
+
+        </script>
+    </body>
+
+</html>

@@ -11,19 +11,17 @@
     </head>
     <body>
         <script type="text/javascript" src="@routes.Application.javascriptRoutes"></script>
-        <script type="text/javascript" src="@routes.Application.javascriptRoutes"></script>
         <script src="https://js.braintreegateway.com/v2/braintree.js"></script>
         <div class="container marketing">
                 <div id="PayPalSignUp" href="#PayPalSignUp" class="row">
 
                     <form id="checkout" method="post">
-                        <h4>Use your PayPal account</h4>
+                        <h4>Use your PayPal account to pre-populate the fields below</h4>
                         <div id="dropin"></div>
-                    </form>
+                    </form><br>
                 </div>
                 <div id="ManualSignUp" href="#ManualSignUp" class="row">
                     <form id="customerForm" role="form" method="post">
-                        <h4 id="signuptext">Or, sign up here.</h4>
                         <div class="col-lg-12">
                             <div class="form-group">
                                 <label for="InputFirstName">First Name</label>
@@ -90,7 +88,6 @@
 
 
             function writeAddress(d) {
-                document.getElementById("signuptext").innerHTML = 'Please check your details';
                 document.getElementById("InputFirstName").value = d.recipient_name;
                 document.getElementById("InputAddress").value = d.street_address;
                 document.getElementById("InputSuburb").value = d.locality;
@@ -99,13 +96,12 @@
             }
 
             var createCustomer = function() {
-                jsRoutes.controllers.Application.CreateCustomer().ajax({
+                jsRoutes.controllers.Application.createCustomer().ajax({
                     data: $("#customerForm").serialize(),
                     type : 'POST',
                     success: function(data) {
 
-
-                        alert(data);
+                        document.getElementById("customerForm").innerHTML = "Customer created successfully. New customer ID=" + data;
 
 
                     },

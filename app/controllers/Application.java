@@ -1,7 +1,9 @@
 package controllers;
 
+import com.braintreegateway.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import model.BraintreeCustomer;
+import play.mvc.Result;
 import service.BraintreeConfiguration;
 import service.BraintreeConfiguration.BraintreeEnvironment;
 import model.BraintreePayment;
@@ -10,13 +12,7 @@ import play.Routes;
 import play.libs.Json;
 import play.mvc.*;
 
-import views.html.index;
-import views.html.single;
-import views.html.future;
-import views.html.pponly;
-import views.html.shortcut;
-import views.html.thankyou;
-import views.html.existingclient;
+import views.html.*;
 
 import java.util.Map;
 
@@ -31,33 +27,38 @@ public class Application extends Controller {
         return ok(index.render());
     }
 
-    public static Result SinglePaymentPage() {
+    public static Result hermesShortcut() {
         String token = session("token");
         return ok(single.render(token));
     };
 
-    public static Result FuturePaymentPage (){
+    public static Result futurePaymentPage (){
         String token = session("token");
         return ok(future.render(token));
 
     }
 
-    public static Result PayPalOnly(){
+    public static Result payPalOnly(){
         String token = session("token");
         return ok(pponly.render(token));
 
     }
 
-    public static Result Shortcut(){
+    public static Result nonHermesShortcut(){
         String token = session("token");
         return ok(shortcut.render(token));
     }
 
-    public static Result SandboxClientToken(String customerId) {
+    public static Result authorisationAndCapture(){
+        String token = session("token");
+        return ok(authcap.render(token));
+    }
+
+    public static Result sandboxClientToken(String customerId) {
         return clientToken(customerId, sandboxBtService);
     }
 
-    public static Result ProductionClientToken(String customerId){
+    public static Result productionClientToken(String customerId){
         return clientToken(customerId, productionBtService);
     }
 
@@ -83,7 +84,7 @@ public class Application extends Controller {
         }
     }
 
-    public static Result ExistingClient(){
+    public static Result existingClient(){
 
         BraintreeCustomer braintreeCustomer = new BraintreeCustomer();
 
@@ -94,7 +95,7 @@ public class Application extends Controller {
 
     }
 
-    public static Result NewSinglePayment(){
+    public static Result newSinglePayment(){
 
         final Map<String, String[]> values = request().body().asFormUrlEncoded();
 
@@ -103,11 +104,13 @@ public class Application extends Controller {
         // Capturing the funds using the nonce received from the client
 
         BraintreePayment braintreePayment = sandboxBtService.CreatePaymentWithNonce(nonce);
+        
+        sandboxBtService.submitPaymentForSettlement(braintreePayment.getTransactionID());
 
         return ok(thankyou.render(braintreePayment.getTransactionID()));
     }
 
-    public static Result NewFuturePayment(){
+    public static Result newFuturePayment(){
 
         final Map<String, String[]> values = request().body().asFormUrlEncoded();
 
@@ -123,13 +126,21 @@ public class Application extends Controller {
         return ok(thankyou.render(braintreePayment.getTransactionID()));
     }
 
-    public static Result SandboxProcessMobilePayment(){
+    public static Result sandboxProcessMobilePayment(){
+        return processMobilePayment(sandboxBtService);
+    }
+
+    public static Result productionProcessMobilePayment() {
+        return processMobilePayment(productionBtService);
+    }
+
+    private static Result processMobilePayment(BraintreeService service){
 
         String nonce = request().body().asJson().findValue("payment_method_nonce").asText();
 
         //Charging a new customer and storing their payment method in the vault
 
-        BraintreePayment braintreePayment = sandboxBtService.CreatePaymentWithNonce(nonce);
+        BraintreePayment braintreePayment = service.CreatePaymentWithNonce(nonce);
 
         String transactionID;
 
@@ -147,31 +158,7 @@ public class Application extends Controller {
         }
     }
 
-    public static Result ProductionProcessMobilePayment(){
-
-        String nonce = request().body().asJson().findValue("payment_method_nonce").asText();
-
-        //Charging a new customer and storing their payment method in the vault
-
-        BraintreePayment braintreePayment = productionBtService.CreatePaymentWithNonce(nonce);
-
-        String transactionID;
-
-        ObjectNode result = Json.newObject();
-
-        if(braintreePayment == null) {
-            result.put("status", "KO");
-            result.put("message", "Could not process payment");
-            return badRequest(result);
-        } else {
-            transactionID  = braintreePayment.getTransactionID();
-            result.put("status", "OK");
-            result.put("transaction_id", transactionID);
-            return ok(result);
-        }
-    }
-
-    public static Result CreateCustomer() {
+    public static Result createCustomer() {
 
         final Map<String, String[]> values = request().body().asFormUrlEncoded();
 
@@ -188,18 +175,22 @@ public class Application extends Controller {
         braintreeCustomer.setState(values.get("InputState")[0]);
 
 
-        sandboxBtService.addToVault(nonce, braintreeCustomer);
+        sandboxBtService.addCustomerToVault(nonce, braintreeCustomer);
 
-        return ok("FUTURE_ID");
+        return ok(braintreeCustomer.getCustomerID());
     }
 
+    public static Result customCreditCardForm(){
+        String token = session("token");
+        return ok(custom.render(token));
+    }
 
     public static Result javascriptRoutes() {
         response().setContentType("text/javascript");
         return ok(
                 Routes.javascriptRouter("jsRoutes",
                         // Routes
-                        controllers.routes.javascript.Application.CreateCustomer()
+                        controllers.routes.javascript.Application.createCustomer()
                 )
         );
     }

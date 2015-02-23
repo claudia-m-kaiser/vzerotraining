@@ -4,29 +4,30 @@
 
 # Pages
 GET         /                                            controllers.Application.index()
-GET         /single                                      controllers.Application.SinglePaymentPage()
-GET         /future                                      controllers.Application.FuturePaymentPage()
+GET         /hermes-shortcut                             controllers.Application.hermesShortcut()
+GET         /non-hermes-shortcut                         controllers.Application.nonHermesShortcut()
+GET         /future                                      controllers.Application.futurePaymentPage()
+GET         /paypal-only                                 controllers.Application.payPalOnly()
+GET         /custom                                      controllers.Application.customCreditCardForm()
+GET         /authcap                                     controllers.Application.authorisationAndCapture()
+
 
 
 # Sandbox Endpoints for client tokens
-GET         /sandbox/client_token/:customerId            controllers.Application.SandboxClientToken(customerId:String)
-GET         /existingclient                              controllers.Application.ExistingClient()
+GET         /sandbox/client_token/:customerId            controllers.Application.sandboxClientToken(customerId:String)
+GET         /existingclient                              controllers.Application.existingClient()
 
 # Production Endpoints for client tokens
-GET         /production/client_token/:customerId         controllers.Application.ProductionClientToken(customerId:String)
+GET         /production/client_token/:customerId         controllers.Application.productionClientToken(customerId:String)
 
 # Sandbox use case endpoints
-POST        /new-single-payment                          controllers.Application.NewSinglePayment()
-POST        /new-future-payment                          controllers.Application.NewFuturePayment()
-POST        /createcustomer                              controllers.Application.CreateCustomer()
-POST        /sandbox/process-mobile-payment              controllers.Application.SandboxProcessMobilePayment()
+POST        /new-single-payment                          controllers.Application.newSinglePayment()
+POST        /new-future-payment                          controllers.Application.newFuturePayment()
+POST        /createcustomer                              controllers.Application.createCustomer()
+POST        /sandbox/process-mobile-payment              controllers.Application.sandboxProcessMobilePayment()
 
 # Production use case endpoints
-POST        /production/process-mobile-payment           controllers.Application.ProductionProcessMobilePayment()
-
-# UI Options
-GET         /shortcut                                    controllers.Application.Shortcut()
-GET         /paypal-only                                 controllers.Application.PayPalOnly()
+POST        /production/process-mobile-payment           controllers.Application.productionProcessMobilePayment()
 
 # Refunds
 #GET         /fullrefund                                  controllers.Application.Refund()
