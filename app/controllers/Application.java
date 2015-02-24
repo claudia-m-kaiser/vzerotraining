@@ -22,14 +22,14 @@ public class Application extends Controller {
     private static BraintreeService productionBtService = new BraintreeService(new BraintreeConfiguration(BraintreeEnvironment.Production));
 
     public static Result index() {
-        String token = sandboxBtService.GetToken();
+        String token = productionBtService.GetToken();
         session("token",token);
         return ok(index.render());
     }
 
     public static Result hermesShortcut() {
         String token = session("token");
-        return ok(single.render(token));
+        return ok(hermesshortcut.render(token));
     };
 
     public static Result futurePaymentPage (){
