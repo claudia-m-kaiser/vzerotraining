@@ -3,6 +3,7 @@ package service;
 import com.braintreegateway.*;
 import model.BraintreeCustomer;
 import model.BraintreePayment;
+import com.braintreegateway.WebhookNotification;
 import play.Logger;
 
 import java.math.BigDecimal;
@@ -60,6 +61,9 @@ public class BraintreeService {
 
     }
 
+    public Customer customerSearch(String customerId){
+        return configuration.getGateway().customer().find(customerId);
+    }
 
     public BraintreePayment CreatePaymentWithNonce(String nonce) {
 
@@ -67,7 +71,7 @@ public class BraintreeService {
                 .amount(new BigDecimal("1.00"))
                 .paymentMethodNonce(nonce)
                 .options()
-                .storeInVault(true)
+                .storeInVault(false)
                 .done();
 
         Result<Transaction> transactionResult = configuration.getGateway().transaction().sale(transactionRequest);
@@ -84,9 +88,46 @@ public class BraintreeService {
         }
     }
 
-    public void submitPaymentForSettlement(String transactionId){
+    public Transaction submitPaymentForSettlement(String transactionId){
 
         Result<Transaction> result = configuration.getGateway().transaction().submitForSettlement(transactionId);
+
+        return result.getTransaction();
+    }
+
+    public ResourceCollection<Customer> getCustomerList(){
+        return configuration.getGateway().customer().all();
+    }
+
+    public boolean voidAuthorisation(String transactionId){
+
+        Result<Transaction> result = configuration.getGateway().transaction().voidTransaction(transactionId);
+
+        if (result.isSuccess()) {
+            Logger.debug("Transaction voided successfully");
+            return true;
+        } else {
+            for (ValidationError error : result.getErrors().getAllDeepValidationErrors()) {
+                Logger.debug(error.getMessage());
+            }
+            return false;
+        }
+
+
+    }
+
+    public Transaction cloneTransaction(String transactionId){
+
+        TransactionCloneRequest request = new TransactionCloneRequest()
+                .amount(new BigDecimal("10.00"))
+                .options()
+                .submitForSettlement(true)
+                .done();
+
+        Result<Transaction> result = configuration.getGateway().transaction().
+                cloneTransaction(transactionId, request);
+
+        return result.getTransaction();
     }
 
     public BraintreePayment CreatePaymentForNewCustomerAndAddToVault(String nonce, String firstName, String lastName, String email) {
@@ -116,13 +157,33 @@ public class BraintreeService {
         }
     }
 
-
     public void CreatePaymentWithSavedPaymentMethod(String token){
         TransactionRequest transactionRequest = new TransactionRequest()
                 .paymentMethodToken(token)
                 .amount(new BigDecimal("20.00"));
 
         Result<Transaction> result = configuration.getGateway().transaction().sale(transactionRequest);
+    }
+
+    public void createPaymentMethodForExistingCustomer(String customerId, String nonce){
+
+        PaymentMethodRequest request = new PaymentMethodRequest()
+                .customerId(customerId)
+                .paymentMethodNonce(nonce);
+
+        Result<? extends PaymentMethod> result = configuration.getGateway().paymentMethod().create(request);
+
+        if (result.isSuccess()){
+            Logger.debug("Payment method added successfully. New payment method token: " + result.getTarget().getToken());
+        }else{
+            Logger.error(result.getErrors().toString());
+        }
+
+    }
+
+    public String getWebhookVerificationResponse(String btChallenge){
+        return configuration.getGateway().webhookNotification().verify(btChallenge);
+
     }
 
 }

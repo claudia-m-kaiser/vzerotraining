@@ -2,7 +2,6 @@ package controllers;
 
 import com.braintreegateway.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import model.BraintreeCustomer;
 import play.mvc.Result;
 import service.BraintreeConfiguration;
 import service.BraintreeConfiguration.BraintreeEnvironment;
@@ -18,11 +17,13 @@ import java.util.Map;
 
 public class Application extends Controller {
 
-    private static BraintreeService sandboxBtService = new BraintreeService(new BraintreeConfiguration(BraintreeEnvironment.Sandbox));
-    private static BraintreeService productionBtService = new BraintreeService(new BraintreeConfiguration(BraintreeEnvironment.Production));
+    protected static BraintreeService sandboxBtService = new BraintreeService(new BraintreeConfiguration(BraintreeEnvironment.Sandbox));
+    protected static BraintreeService productionBtService = new BraintreeService(new BraintreeConfiguration(BraintreeEnvironment.Production));
+
+    protected static BraintreeService currService = sandboxBtService;
 
     public static Result index() {
-        String token = productionBtService.GetToken();
+        String token = currService.GetToken();
         session("token",token);
         return ok(index.render());
     }
@@ -86,10 +87,10 @@ public class Application extends Controller {
 
     public static Result existingClient(){
 
-        BraintreeCustomer braintreeCustomer = new BraintreeCustomer();
+        String customerId = "64771009";
 
         //Using the customer ID from an existing customer
-        String token = sandboxBtService.GetToken("71423461");
+        String token = sandboxBtService.GetToken(customerId);
 
         return ok(existingclient.render(token));
 
@@ -158,26 +159,66 @@ public class Application extends Controller {
         }
     }
 
-    public static Result createCustomer() {
+    public static Result renderCreatePaymentMethodPage(){
+
+        String token = session("token");
+        return ok(paymentmethodcreate.render(token));
+    }
+
+    public static Result newAuthorisation(){
 
         final Map<String, String[]> values = request().body().asFormUrlEncoded();
+        String nonce = values.get("payment_method_nonce")[0].toString();
 
-        String nonce = values.get("payment_method_nonce")[0];
+        // Capturing the funds using the nonce received from the client
+        BraintreePayment braintreePayment = sandboxBtService.CreatePaymentWithNonce(nonce);
 
-        BraintreeCustomer braintreeCustomer = new BraintreeCustomer();
+        return ok(braintreePayment.getTransactionID());
+    }
 
-        braintreeCustomer.setFirstName(values.get("InputFirstName")[0]);
-        braintreeCustomer.setLastName(values.get("InputLastName")[0]);
-        braintreeCustomer.setEmail(values.get("InputEmail")[0]);
-        braintreeCustomer.setAddress(values.get("InputAddress")[0]);
-        braintreeCustomer.setSuburb(values.get("InputSuburb")[0]);
-        braintreeCustomer.setPostcode(values.get("InputPostcode")[0]);
-        braintreeCustomer.setState(values.get("InputState")[0]);
+    public static Result captureAuthorisation(){
 
+        final Map<String, String[]> values = request().body().asFormUrlEncoded();
+        String authorisation_id = values.get("authorisation_id")[0].toString();
 
-        sandboxBtService.addCustomerToVault(nonce, braintreeCustomer);
+        // Capturing the authorisation
+        Transaction transaction = sandboxBtService.submitPaymentForSettlement(authorisation_id);
 
-        return ok(braintreeCustomer.getCustomerID());
+        return ok(transaction.getId());
+    }
+
+    public static Result voidAuthorisation(){
+
+        String authorisation_id = "938xty";
+
+        // Voiding the authorisation
+        if(sandboxBtService.voidAuthorisation(authorisation_id)){
+            return ok();
+        }else{
+            return badRequest();
+        }
+
+    }
+
+    public static Result cloneTransaction(){
+
+        String transaction_id = "bydqb4";
+
+        // Voiding the authorisation
+        sandboxBtService.cloneTransaction(transaction_id);
+
+        return ok();
+
+    }
+
+    public static Result transactionSearch(){
+
+        return ok();
+    }
+
+    public static Result dropIn(){
+        String token = session("token");
+        return ok(dropin.render(token));
     }
 
     public static Result customCreditCardForm(){
@@ -190,7 +231,12 @@ public class Application extends Controller {
         return ok(
                 Routes.javascriptRouter("jsRoutes",
                         // Routes
-                        controllers.routes.javascript.Application.createCustomer()
+                        controllers.routes.javascript.Application.newAuthorisation(),
+                        controllers.routes.javascript.Application.captureAuthorisation(),
+                        controllers.routes.javascript.Application.voidAuthorisation(),
+                        controllers.routes.javascript.CustomerController.createCustomer()
+
+
                 )
         );
     }

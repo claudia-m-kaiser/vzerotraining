@@ -4,7 +4,7 @@
 
 <html>
     <head>
-        <title>Future Payment</title>
+        <title>Drop-in UI - One time payment</title>
         <link href="/assets/stylesheets/bootstrap.min.css" rel="stylesheet">
         <link href="/assets/stylesheets/styles.css" rel="stylesheet">
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,9 +14,14 @@
         <div class="container marketing">
             <div href="#payment" id="payment" class="row">
                 <div class="col-md-8 text-left">
-                    <form role="form" id="checkout" action ="/new-future-payment" method="post">
+                    <form role="form" id="checkout" action ="/gateway/payment-method/create" method="post">
 
-                        <p>Click the PayPal button or enter your card details:</p>
+                        <div class="form-group">
+                            <label for="customer_id">Customer ID: </label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="customer_id" name="customer_id" value="36679493" >
+                            </div>
+                        </div>
                         <div class="form-group">
                             <div class="input-group" id="dropin-ui"></div>
                         </div>
@@ -28,13 +33,14 @@
 
 
         <script>
-            braintree.setup("@Token", "dropin", {
-                  container: "dropin-ui",
-                    paypal: {
-                                displayName: "TestMerchant"
-                            }
+        braintree.setup("@Token", "dropin", {
+            container: "dropin-ui",
+            paypal: {
+                displayName: "TestMerchant"
+            }
 
-                });
+        });
+
         </script>
     </body>
 

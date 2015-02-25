@@ -96,7 +96,7 @@
             }
 
             var createCustomer = function() {
-                jsRoutes.controllers.Application.createCustomer().ajax({
+                jsRoutes.controllers.Customer.createCustomer().ajax({
                     data: $("#customerForm").serialize(),
                     type : 'POST',
                     success: function(data) {

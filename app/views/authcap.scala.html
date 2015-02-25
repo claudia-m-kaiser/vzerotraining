@@ -12,15 +12,27 @@
     </head>
     <body>
         <script src="https://js.braintreegateway.com/v2/braintree.js"></script>
+        <script type="text/javascript" src="@routes.Application.javascriptRoutes"></script>
         <div class="container marketing">
             <div href="#payment" id="payment" class="row">
                 <div class="col-md-8 text-left">
-                    <form role="form" id="checkout" action ="/new-single-payment " method="post">
+                    <form role="form" id="checkout" method="post">
                         <p>Click the PayPal button or enter your card details:</p>
                         <div class="form-group">
                             <div class="input-group" id="dropin-ui"></div>
                         </div>
-                        <input type="submit" name="Authorise" id="Authorise" value="Authorise" class="btn btn-large btn-primary pull-left">
+                        <input type="text" class="form-control" name="payment_method_nonce" id="payment_method_nonce" style="visibility: hidden">
+                        <input type="button" name="AuthoriseBtn" id="AuthoriseBtn" value="Authorise" class="btn btn-large btn-primary pull-left">
+                    </form>
+                </div>
+            </div>
+            <div class="row" id="settlement_action" style="visibility: hidden">
+                <div class="col-md-8 text-left">
+                    <form role="form" id="capture" method="post">
+                        <p id="successText"></p>
+                        <input type="text" class="form-control" name="authorisation_id" id="authorisation_id" style="visibility: hidden">
+                        <input type="button" name="CaptureBtn" id="CaptureBtn" value="Capture" class="btn btn-large btn-primary pull-left">
+                        <input type="button" name="VoidBtn" id="VoidBtn" value="Void" class="btn btn-large btn-primary pull-left">
                     </form>
                 </div>
             </div>
@@ -29,14 +41,68 @@
 
         <script>
 
-        braintree.setup("@Token", "dropin", {
-        container: "dropin-ui",
-            paypal: {
-                singleUse: true
+        braintree.setup("@Token", "paypal", {
+            container: "dropin-ui",
+            singleUse: true,
+            onSuccess: function(nonce, email, shippingAddress)  {
+                document.getElementById("payment_method_nonce").value = nonce;
             }
-
         });
 
+        var createAuth = function() {
+            jsRoutes.controllers.Application.newAuthorisation().ajax({
+                data: $("#checkout").serialize(),
+                type : 'POST',
+                    success: function(data) {
+                    document.getElementById("AuthoriseBtn" ).disabled = 'true';
+                    document.getElementById("capture" ).style.visibility = 'visible';
+                    document.getElementById("successText" ).innerHTML = "Success!! New authorisation ID:" + data;
+                    document.getElementById("authorisation_id" ).value = data;
+
+                    },
+                    error: function() {
+
+
+                    alert("Error!");
+
+                    }
+            })
+        };
+
+
+        $('#AuthoriseBtn').click(createAuth);
+
+        var captureAuth = function() {
+            jsRoutes.controllers.Application.captureAuthorisation().ajax({
+                data: $("#capture").serialize(),
+                type : 'POST',
+                success: function(data) {
+                    alert("Success!! New transaction ID:" + data);
+                },
+                error: function() {
+                    alert("Error!");
+                }
+            })
+        };
+
+
+        $('#CaptureBtn').click(captureAuth);
+
+        var voidAuth = function() {
+            jsRoutes.controllers.Application.voidAuthorisation().ajax({
+                data: $("#capture").serialize(),
+                    type : 'POST',
+                    success: function(data) {
+                        alert("Success!! New void ID:" + data);
+                        },
+                        error: function() {
+                        alert("Error!");
+                        }
+            })
+        };
+
+
+        $('#VoidBtn').click(voidAuth);
 
         </script>
     </body>

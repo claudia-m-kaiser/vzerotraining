@@ -10,8 +10,17 @@ GET         /future                                      controllers.Application
 GET         /paypal-only                                 controllers.Application.payPalOnly()
 GET         /custom                                      controllers.Application.customCreditCardForm()
 GET         /authcap                                     controllers.Application.authorisationAndCapture()
+GET         /dropin                                      controllers.Application.dropIn()
+GET         /update-customer                             controllers.CustomerController.updateCustomer()
+GET         /customer-list                               controllers.CustomerController.showCustomerList()
+GET         /index/payment-method/create                 controllers.Application.renderCreatePaymentMethodPage()
 
+# Webhooks endpoints
 
+GET         /webhooks/setup:bTChallenge                  controllers.WebhooksController.initialSetup(bTChallenge:String)
+
+# Gateway endpoints
+POST        /gateway/payment-method/create               controllers.PaymentMethodController.createPaymentMethod()
 
 # Sandbox Endpoints for client tokens
 GET         /sandbox/client_token/:customerId            controllers.Application.sandboxClientToken(customerId:String)
@@ -23,8 +32,13 @@ GET         /production/client_token/:customerId         controllers.Application
 # Sandbox use case endpoints
 POST        /new-single-payment                          controllers.Application.newSinglePayment()
 POST        /new-future-payment                          controllers.Application.newFuturePayment()
-POST        /createcustomer                              controllers.Application.createCustomer()
+POST        /createAuth                                  controllers.Application.newAuthorisation()
+POST        /captureAuth                                 controllers.Application.captureAuthorisation()
+GET         /voidAuth                                    controllers.Application.voidAuthorisation()
+GET         /clone-transaction                           controllers.Application.cloneTransaction()
+POST        /createcustomer                              controllers.CustomerController.createCustomer()
 POST        /sandbox/process-mobile-payment              controllers.Application.sandboxProcessMobilePayment()
+GET         /transaction-search                          controllers.Application.transactionSearch()
 
 # Production use case endpoints
 POST        /production/process-mobile-payment           controllers.Application.productionProcessMobilePayment()
