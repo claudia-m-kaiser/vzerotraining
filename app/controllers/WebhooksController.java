@@ -12,20 +12,15 @@ import java.util.Set;
  */
 public class WebhooksController extends Application {
 
-    public static Result initialSetup(){
+    public static Result initialSetup(String bt_challenge){
 
-        String bTChallenge="";
-
-        final Set<Map.Entry<String,String[]>> entries = request().queryString().entrySet();
-        for (Map.Entry<String,String[]> entry : entries) {
-            final String key = entry.getKey();
-            final String value = Arrays.toString(entry.getValue());
-            if (key.equals("bt_challenge")){bTChallenge = value;}
+        if(bt_challenge.isEmpty()){
+            Logger.error("Could not get bt challenge");
+        }else{
+            Logger.info("BT Challenge is: " + bt_challenge);
         }
-        String verification = currService.getWebhookVerificationResponse(bTChallenge);
 
-        String result = ok(verification).toString();
-        Logger.info(result);
+        String verification = currService.getWebhookVerificationResponse(bt_challenge);
 
         return ok(verification);
     }

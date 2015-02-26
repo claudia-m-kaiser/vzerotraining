@@ -16,7 +16,7 @@ GET         /customer-list                               controllers.CustomerCon
 GET         /index/payment-method/create                 controllers.Application.renderCreatePaymentMethodPage()
 
 # Webhooks endpoints
-GET         /webhooks/setup                              controllers.WebhooksController.initialSetup()
+GET         /webhooks/setup/:bt_challenge                controllers.WebhooksController.initialSetup(bt_challenge)
 
 # Gateway endpoints
 POST        /gateway/payment-method/create               controllers.PaymentMethodController.createPaymentMethod()
