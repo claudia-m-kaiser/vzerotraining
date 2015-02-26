@@ -8,6 +8,7 @@ import play.Logger;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.Map;
 
 /**
  * Created by clkaiser on 21/02/15.
@@ -182,6 +183,9 @@ public class BraintreeService {
 
     }
 
+    ////////////////////////////////////////////Webhooks///////////////////////////////////////////
+
+
     public String getWebhookVerificationResponse(String btChallenge){
         return configuration.getGateway().webhookNotification().verify(btChallenge);
 
@@ -194,7 +198,42 @@ public class BraintreeService {
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
         String date = dateFormat.format(webhookNotification.getTimestamp().getTime());
 
-        return "Date: "+ date + " Type: " + webhookNotification.getKind();
+        String message = "Date: "+ date + " Type: " + webhookNotification.getKind()+ " Merchant Id: " + webhookNotification.getMerchantAccount().getId();
+
+        return message;
+    }
+
+    ////////////////////////////////////////////Marketplaces///////////////////////////////////////////
+
+    public void onboardSubmerchantAccount(){
+
+        MerchantAccountRequest request = new MerchantAccountRequest().
+                individual().
+                firstName("Jane").
+                lastName("Doe").
+                email("claudia.m.kaiser@gmail.com").
+                    phone("6145551234").
+                    dateOfBirth("1981-11-19").
+                    ssn("456-45-4567").
+                    address().
+                streetAddress("111 Main St").
+                        locality("Chicago").
+                region("IL").
+                        postalCode("60622").
+                    done().
+                done().
+                funding().
+                    descriptor("Blue Ladders").
+                destination(MerchantAccount.FundingDestination.EMAIL).
+                    email("claudia.m.kaiser@gmail.com").
+                done().
+                tosAccepted(true).
+                masterMerchantAccountId("v4ygp9cd2mj42fgv").
+                id("never-never-land");
+
+        Result<MerchantAccount> result = configuration.getGateway().merchantAccount().create(request);
+
+        Logger.debug(result.getMessage());
     }
 
 }

@@ -22,6 +22,9 @@ POST        /webhooks                                    controllers.WebhooksCon
 # Gateway endpoints
 POST        /gateway/payment-method/create               controllers.PaymentMethodController.createPaymentMethod()
 
+# Maketplace endpoints
+GET         /marketplace/onboard                         controllers.MarketplaceController.createSubmerchantAccount()
+
 # Sandbox Endpoints for client tokens
 GET         /sandbox/client_token/:customerId            controllers.Application.sandboxClientToken(customerId:String)
 GET         /existingclient                              controllers.Application.existingClient()
@@ -39,6 +42,8 @@ GET         /clone-transaction                           controllers.Application
 POST        /createcustomer                              controllers.CustomerController.createCustomer()
 POST        /sandbox/process-mobile-payment              controllers.Application.sandboxProcessMobilePayment()
 GET         /transaction-search                          controllers.Application.transactionSearch()
+
+
 
 # Production use case endpoints
 POST        /production/process-mobile-payment           controllers.Application.productionProcessMobilePayment()
