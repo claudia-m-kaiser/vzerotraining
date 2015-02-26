@@ -20,10 +20,13 @@ public class WebhooksController extends Application {
         for (Map.Entry<String,String[]> entry : entries) {
             final String key = entry.getKey();
             final String value = Arrays.toString(entry.getValue());
-
-            if (key.equals("bt_challenge")){bTChallenge = key;}
+            if (key.equals("bt_challenge")){bTChallenge = value;}
         }
+        String verification = currService.getWebhookVerificationResponse(bTChallenge);
 
-        return ok(currService.getWebhookVerificationResponse(bTChallenge));
+        String result = ok(verification).toString();
+        Logger.info(result);
+
+        return ok(verification);
     }
 }
