@@ -35,17 +35,17 @@ public class WebhooksController extends Application {
 
         String parsedWebhook = currService.parseWebhookNotification(bt_signature,bt_payload);
 
-        writeToWebhookLogFile(parsedWebhook);
+        writeToWebhookLogFile(parsedWebhook, "webhooks.log");
 
         return ok();
     }
 
-    public static void writeToWebhookLogFile(String notification){
+    public static void writeToWebhookLogFile(String notification, String filename){
 
         try{
             String fileSeparator = System.getProperty("file.separator");
             //Specify the file name and path here
-            File file =new File("logs" + fileSeparator + "webhooks.log");
+            File file =new File("logs" + fileSeparator + filename);
 
     	/* This logic is to create the file if the
     	 * file is not already present
