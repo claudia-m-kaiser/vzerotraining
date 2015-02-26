@@ -33,8 +33,9 @@ public class WebhooksController extends Application {
         String bt_signature = webhook.get("bt_signature")[0].toString();
         String bt_payload = webhook.get("bt_payload")[0].toString();
 
-        Logger.debug("BT_Signature " + bt_signature + " BT Payload " + bt_payload);
-        writeToWebhookLogFile("test");
+        writeToWebhookLogFile("Request content: " + request().toString());
+        writeToWebhookLogFile("Request body: " + request().body().asText());
+        writeToWebhookLogFile("BT_Signature " + bt_signature + " BT Payload " + bt_payload);
 
         return ok();
     }

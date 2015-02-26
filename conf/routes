@@ -17,7 +17,7 @@ GET         /index/payment-method/create                 controllers.Application
 
 # Webhooks endpoints
 GET         /webhooks                                    controllers.WebhooksController.initialSetup(bt_challenge:String)
-POST         /webhooks                                    controllers.WebhooksController.listener()
+POST        /webhooks                                    controllers.WebhooksController.listener()
 
 # Gateway endpoints
 POST        /gateway/payment-method/create               controllers.PaymentMethodController.createPaymentMethod()
