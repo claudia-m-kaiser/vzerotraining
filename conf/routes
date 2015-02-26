@@ -13,6 +13,7 @@ GET         /authcap                                     controllers.Application
 GET         /dropin                                      controllers.Application.dropIn()
 GET         /update-customer                             controllers.CustomerController.updateCustomer()
 GET         /customer-list                               controllers.CustomerController.showCustomerList()
+GET         /onboarding                                  controllers.Application.submerchantOnboardingPage()
 GET         /index/payment-method/create                 controllers.Application.renderCreatePaymentMethodPage()
 
 # Webhooks endpoints

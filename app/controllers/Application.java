@@ -122,7 +122,9 @@ public class Application extends Controller {
 
         //Charging a new customer and storing their payment method in the vault
 
-        BraintreePayment braintreePayment = sandboxBtService.CreatePaymentForNewCustomerAndAddToVault(nonce, firstName, lastName, email);
+        BraintreePayment braintreePayment = sandboxBtService.CreatePaymentWithNonce(nonce);
+
+        //BraintreePayment braintreePayment = sandboxBtService.CreatePaymentForNewCustomerAndAddToVault(nonce, firstName, lastName, email);
 
         return ok(thankyou.render(braintreePayment.getTransactionID()));
     }
@@ -219,6 +221,10 @@ public class Application extends Controller {
     public static Result dropIn(){
         String token = session("token");
         return ok(dropin.render(token));
+    }
+
+    public static Result submerchantOnboardingPage(){
+        return ok(onboarding.render());
     }
 
     public static Result customCreditCardForm(){

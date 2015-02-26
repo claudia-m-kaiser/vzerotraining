@@ -8,6 +8,7 @@ import play.Logger;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -69,12 +70,25 @@ public class BraintreeService {
 
     public BraintreePayment CreatePaymentWithNonce(String nonce) {
 
+        /* Transaction
         TransactionRequest transactionRequest = new TransactionRequest()
                 .amount(new BigDecimal("1.00"))
                 .paymentMethodNonce(nonce)
                 .options()
                 .storeInVault(false)
                 .done();
+        */
+
+        TransactionRequest transactionRequest = new TransactionRequest()
+                .amount(new BigDecimal("100.00"))
+                .merchantAccountId("narnia-books")
+                .serviceFeeAmount(new BigDecimal("10.00"))
+                .paymentMethodNonce(nonce)
+                .options()
+                    .submitForSettlement(true)
+                    .holdInEscrow(false)
+                .done();
+
 
         Result<Transaction> transactionResult = configuration.getGateway().transaction().sale(transactionRequest);
 
@@ -198,38 +212,39 @@ public class BraintreeService {
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
         String date = dateFormat.format(webhookNotification.getTimestamp().getTime());
 
-        String message = "Date: "+ date + " Type: " + webhookNotification.getKind()+ " Merchant Id: " + webhookNotification.getMerchantAccount().getId();
+        String message = "Date: "+ date + " **** Type: " + webhookNotification.getKind()+ " **** Merchant Id: " + webhookNotification.getMerchantAccount().getId();
 
         return message;
     }
 
     ////////////////////////////////////////////Marketplaces///////////////////////////////////////////
 
-    public void onboardSubmerchantAccount(){
+    public void onboardSubmerchantAccount(Map submerchant){
+
+        String firstName = submerchant.get("FirstName").toString();
 
         MerchantAccountRequest request = new MerchantAccountRequest().
                 individual().
                 firstName("Jane").
                 lastName("Doe").
                 email("claudia.m.kaiser@gmail.com").
-                    phone("6145551234").
-                    dateOfBirth("1981-11-19").
-                    ssn("456-45-4567").
-                    address().
-                streetAddress("111 Main St").
+                phone("6145551234").
+                dateOfBirth("1981-11-19").
+                address().
+                        streetAddress("111 Main St").
                         locality("Chicago").
-                region("IL").
+                         region("IL").
                         postalCode("60622").
                     done().
                 done().
                 funding().
                     descriptor("Blue Ladders").
-                destination(MerchantAccount.FundingDestination.EMAIL).
+                    destination(MerchantAccount.FundingDestination.EMAIL).
                     email("claudia.m.kaiser@gmail.com").
                 done().
                 tosAccepted(true).
                 masterMerchantAccountId("v4ygp9cd2mj42fgv").
-                id("never-never-land");
+                id("narnia-books");
 
         Result<MerchantAccount> result = configuration.getGateway().merchantAccount().create(request);
 
