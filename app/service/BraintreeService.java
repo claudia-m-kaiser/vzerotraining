@@ -186,4 +186,11 @@ public class BraintreeService {
 
     }
 
+    public String parseWebhookNotification(String bt_signature, String bt_payload){
+
+        WebhookNotification webhookNotification = configuration.getGateway().webhookNotification().parse(bt_signature,bt_payload);
+
+        return webhookNotification.getTimestamp() + " Type: " + webhookNotification.getKind();
+    }
+
 }
