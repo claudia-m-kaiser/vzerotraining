@@ -31,7 +31,8 @@ public class WebhooksController extends Application {
         //String bt_signature = request().body().asJson().findValue("bt_signature").asText();
         //String bt_payload = request().body().asJson().findValue("bt_payload").asText();
 
-        writeToWebhookLogFile(request().toString());
+        Logger.debug(request().body().asText());
+        writeToWebhookLogFile("test");
 
         return ok();
     }
