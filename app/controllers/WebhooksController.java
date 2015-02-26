@@ -7,6 +7,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Created by clkaiser on 25/02/15.
@@ -28,10 +29,11 @@ public class WebhooksController extends Application {
 
     public static Result listener(){
 
-        //String bt_signature = request().body().asJson().findValue("bt_signature").asText();
-        //String bt_payload = request().body().asJson().findValue("bt_payload").asText();
+        final Map<String, String[]> webhook = request().body().asFormUrlEncoded();
+        String bt_signature = webhook.get("bt_signature")[0].toString();
+        String bt_payload = webhook.get("bt_payload")[0].toString();
 
-        Logger.debug(request().body().asText());
+        Logger.debug("BT_Signature " + bt_signature + " BT Payload " + bt_payload);
         writeToWebhookLogFile("test");
 
         return ok();
