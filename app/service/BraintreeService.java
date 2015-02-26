@@ -7,6 +7,7 @@ import com.braintreegateway.WebhookNotification;
 import play.Logger;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 
 /**
  * Created by clkaiser on 21/02/15.
@@ -190,7 +191,10 @@ public class BraintreeService {
 
         WebhookNotification webhookNotification = configuration.getGateway().webhookNotification().parse(bt_signature,bt_payload);
 
-        return webhookNotification.getTimestamp() + " Type: " + webhookNotification.getKind();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+        String date = dateFormat.format(webhookNotification.getTimestamp().getTime());
+
+        return "Date: "+ date + " Type: " + webhookNotification.getKind();
     }
 
 }
