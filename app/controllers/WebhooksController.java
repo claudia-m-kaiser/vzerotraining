@@ -24,4 +24,18 @@ public class WebhooksController extends Application {
 
         return ok(verification);
     }
+
+    public static Result listener(){
+
+        final Map<String, String[]> params = request().body().asFormUrlEncoded();
+
+        Logger.debug("Request :" + request().toString());
+
+        String bt_signature = params.get("bt_signature")[0].toString();
+        String bt_payload = params.get("bt_payload")[0].toString();
+
+        Logger.debug("bt_signature: " + bt_signature + "bt_payload: " + bt_payload);
+
+        return ok();
+    }
 }
