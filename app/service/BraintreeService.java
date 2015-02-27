@@ -212,7 +212,7 @@ public class BraintreeService {
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
         String date = dateFormat.format(webhookNotification.getTimestamp().getTime());
 
-        String message = "Date: "+ date + " **** Type: " + webhookNotification.getKind()+ " **** Merchant Id: " + webhookNotification.getMerchantAccount().getId();
+        String message = "Date: "+ date + " **** Type: " + webhookNotification.getKind();
 
         return message;
     }
