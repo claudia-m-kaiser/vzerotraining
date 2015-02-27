@@ -20,7 +20,7 @@ public class Application extends Controller {
     protected static BraintreeService sandboxBtService = new BraintreeService(new BraintreeConfiguration(BraintreeEnvironment.Sandbox));
     protected static BraintreeService productionBtService = new BraintreeService(new BraintreeConfiguration(BraintreeEnvironment.Production));
 
-    protected static BraintreeService currService = sandboxBtService;
+    protected static BraintreeService currService = productionBtService;
 
     public static Result index() {
         String token = currService.GetToken();

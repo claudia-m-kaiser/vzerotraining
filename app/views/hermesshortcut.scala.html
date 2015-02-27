@@ -31,12 +31,14 @@
         <script>
 
 
-        braintree.setup("@Token", "paypal", {
+        braintree.setup("@Token", "dropin", {
 
         container: "dropin-ui",
-        singleUse : true,
-        amount : 10.00,
-        currency : 'AUD'
+        paypal: {
+            singleUse: true,
+            amount: 10.00,
+            currency: 'USD'
+            }
         });
         </script>
     </body>
