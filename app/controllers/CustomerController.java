@@ -6,6 +6,7 @@ import model.BraintreeCustomer;
 import play.Logger;
 import play.libs.Json;
 import play.mvc.Result;
+import views.html.customerlist;
 import views.html.customerupdate;
 
 import java.util.Map;
@@ -73,7 +74,7 @@ public class CustomerController extends Application {
     }
 
     public static Result showCustomerList(){
-
+/*
         ObjectNode customerList = Json.newObject();
 
         int index = 0;
@@ -82,8 +83,8 @@ public class CustomerController extends Application {
             index++;
             Logger.debug("Customer " + index + ": " + customer.getId());
         }
-
-        return ok();
+*/
+        return ok(customerlist.render());
     }
 
 }

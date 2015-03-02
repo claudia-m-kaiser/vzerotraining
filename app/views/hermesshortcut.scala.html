@@ -15,10 +15,8 @@
         <div class="container marketing" backgroun>
             <div href="#payment" id="payment" class="row">
                 <div class="col-md-8 text-left">
-                    <form role="form" id="checkout" action ="/new-future-payment" method="post">
-
-                            <p>Click the PayPal button or enter your card details:</p>
-                            <div class="form-group">
+                    <form role="form" id="checkout" action ="/gateway/transaction/create" method="post">
+                        <div class="form-group">
                                 <div class="input-group" id="dropin-ui"></div>
                             </div>
                             <input type="submit" name="Pay" id="Pay" value="Pay" class="btn btn-large btn-primary pull-left">

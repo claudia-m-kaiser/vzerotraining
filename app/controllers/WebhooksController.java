@@ -1,5 +1,6 @@
 package controllers;
 
+import com.braintreegateway.WebhookNotification;
 import play.Logger;
 import play.mvc.Result;
 
@@ -7,6 +8,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Map;
 
 /**
@@ -27,20 +29,46 @@ public class WebhooksController extends Application {
         return ok(verification);
     }
 
-    public static Result listener(){
+    public static Result genericListener(){
 
         final Map<String, String[]> webhook = request().body().asFormUrlEncoded();
-        String bt_signature = webhook.get("bt_signature")[0].toString();
-        String bt_payload = webhook.get("bt_payload")[0].toString();
+        WebhookNotification notification = getNotification(webhook);
 
-        String parsedWebhook = currService.parseWebhookNotification(bt_signature,bt_payload);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
 
-        writeToWebhookLogFile(parsedWebhook);
+        String message = "Date: "+ dateFormat.format(notification.getTimestamp().getTime())
+                        + " **** Type: " + notification.getKind();
+        writeToWebhookLogFile(message);
 
         return ok();
     }
 
-    public static void writeToWebhookLogFile(String notification){
+    public static Result subscriptionsListener(){
+
+        final Map<String, String[]> webhook = request().body().asFormUrlEncoded();
+        WebhookNotification notification = getNotification(webhook);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+
+        String message = "Date: "+ dateFormat.format(notification.getTimestamp().getTime())
+                + " **** Subcription Id: " + notification.getSubscription().getId();
+
+        writeToWebhookLogFile(message);
+
+        return ok();
+    }
+
+    private static WebhookNotification getNotification(Map<String, String[]> webhook){
+
+        String bt_signature = webhook.get("bt_signature")[0].toString();
+        String bt_payload = webhook.get("bt_payload")[0].toString();
+
+        WebhookNotification notification = currService.parseWebhookNotification(bt_signature,bt_payload);
+
+        return notification;
+    }
+
+    private static void writeToWebhookLogFile(String notification){
 
         try{
             String fileSeparator = System.getProperty("file.separator");

@@ -15,14 +15,18 @@
         <script src="https://js.braintreegateway.com/v2/braintree.js"></script>
         <div class="container marketing">
             <div id="CreditCard" href="#CreditCard" class="row">
-                <form id="checkout" action="/new-single-payment" method="post">
-                    <label>Credit Card Number: </label>
-                    <input data-braintree-name="number" value="4111111111111111"><br>
-                    <label>Expiration Date: </label>
-                    <input data-braintree-name="expiration_date" value="10/20"><br>
-                    <label>CVV: </label>
-                    <input data-braintree-name="cvv" value="100"><br>
-                    <input type="submit" id="submit" value="Pay">
+                <form id="checkout" action="/gateway/transaction/create" method="post">
+                    <div class="col-md-4">
+                        <label label-default="" class="control-label">Card Number</label><br>
+                        <input class="form-control" data-braintree-name="number" value="4111111111111111"><br>
+                        <label label-default="" class="control-label">Expiration Date</label><br>
+                        <input class="form-control" data-braintree-name="expiration_date" value="10/20"><br>
+                        <label label-default="" class="control-label">CVV</label><br>
+                        <input class="form-control" data-braintree-name="cvv" value="100"><br>
+                        <input type="hidden" name="store_in_vault" id="store_in_vault" value="false">
+                        <input type="submit" id="submit" value="Pay" class="btn btn-large btn-primary pull-left">
+                    </div>
+
                 </form>
             </div>
         </div>

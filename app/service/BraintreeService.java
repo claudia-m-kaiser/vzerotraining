@@ -68,47 +68,51 @@ public class BraintreeService {
         return configuration.getGateway().customer().find(customerId);
     }
 
-    public BraintreePayment CreatePaymentWithNonce(String nonce) {
+    public Transaction createTransactionWithNonce(String nonce, boolean storeInVault) {
 
-        /* Transaction
         TransactionRequest transactionRequest = new TransactionRequest()
                 .amount(new BigDecimal("1.00"))
+                //.merchantAccountId("narnia-books")
+                //.serviceFeeAmount(new BigDecimal("10.00"))
                 .paymentMethodNonce(nonce)
                 .options()
-                .storeInVault(false)
-                .done();
-        */
-
-        TransactionRequest transactionRequest = new TransactionRequest()
-                .amount(new BigDecimal("100.00"))
-                .merchantAccountId("narnia-books")
-                .serviceFeeAmount(new BigDecimal("10.00"))
-                .paymentMethodNonce(nonce)
-                .options()
+                    .storeInVault(storeInVault)
                     .submitForSettlement(true)
-                    .holdInEscrow(false)
+                    //holdInEscrow(false)
                 .done();
-
 
         Result<Transaction> transactionResult = configuration.getGateway().transaction().sale(transactionRequest);
 
-        if (transactionResult.isSuccess()) {
+        return checkTransactionResult(transactionResult);
+    }
 
-            BraintreePayment btPayment = new BraintreePayment(transactionResult.getTarget());
-            Logger.info("Success!: ", btPayment.getTransactionID());
-            return btPayment;
+    public Transaction createTransactionWithToken(String token){
+        TransactionRequest transactionRequest = new TransactionRequest()
+                .paymentMethodToken(token)
+                .amount(new BigDecimal("20.00"));
 
-        } else {
-            Logger.info(transactionResult.getMessage());
-            return null;
-        }
+        Result<Transaction> transactionResult = configuration.getGateway().transaction().sale(transactionRequest);
+        return checkTransactionResult(transactionResult);
+
     }
 
     public Transaction submitPaymentForSettlement(String transactionId){
 
-        Result<Transaction> result = configuration.getGateway().transaction().submitForSettlement(transactionId);
+        Result<Transaction> transactionResult = configuration.getGateway().transaction().submitForSettlement(transactionId);
 
-        return result.getTransaction();
+        return checkTransactionResult(transactionResult);
+    }
+
+    private Transaction checkTransactionResult(Result<Transaction> transactionResult){
+        if (transactionResult.isSuccess()) {
+
+            Logger.info("Success!: " + transactionResult.getTarget().getId());
+            return transactionResult.getTarget();
+
+        } else {
+            Logger.error("Error!: " + transactionResult.getMessage());
+            return null;
+        }
     }
 
     public ResourceCollection<Customer> getCustomerList(){
@@ -117,13 +121,13 @@ public class BraintreeService {
 
     public boolean voidAuthorisation(String transactionId){
 
-        Result<Transaction> result = configuration.getGateway().transaction().voidTransaction(transactionId);
+        Result<Transaction> transactionResult = configuration.getGateway().transaction().voidTransaction(transactionId);
 
-        if (result.isSuccess()) {
+        if (transactionResult.isSuccess()) {
             Logger.debug("Transaction voided successfully");
             return true;
         } else {
-            for (ValidationError error : result.getErrors().getAllDeepValidationErrors()) {
+            for (ValidationError error : transactionResult.getErrors().getAllDeepValidationErrors()) {
                 Logger.debug(error.getMessage());
             }
             return false;
@@ -146,40 +150,7 @@ public class BraintreeService {
         return result.getTransaction();
     }
 
-    public BraintreePayment CreatePaymentForNewCustomerAndAddToVault(String nonce, String firstName, String lastName, String email) {
 
-        TransactionRequest transactionRequest = new TransactionRequest()
-                .paymentMethodNonce(nonce)
-                .customer()
-                .firstName(firstName)
-                .lastName(lastName)
-                .email(email)
-                .done()
-                .amount(new BigDecimal("20.00"))
-                .options()
-                .storeInVault(true)
-                .done();
-
-        Result<Transaction> transactionResult = configuration.getGateway().transaction().sale(transactionRequest);
-
-        if (transactionResult.isSuccess()) {
-            BraintreePayment btPayment = new BraintreePayment(transactionResult.getTarget());
-            Logger.info("Success!: ", btPayment.getTransactionID());
-            return btPayment;
-
-        } else {
-            Logger.info(transactionResult.getMessage());
-            return null;
-        }
-    }
-
-    public void CreatePaymentWithSavedPaymentMethod(String token){
-        TransactionRequest transactionRequest = new TransactionRequest()
-                .paymentMethodToken(token)
-                .amount(new BigDecimal("20.00"));
-
-        Result<Transaction> result = configuration.getGateway().transaction().sale(transactionRequest);
-    }
 
     public void createPaymentMethodForExistingCustomer(String customerId, String nonce){
 
@@ -205,16 +176,11 @@ public class BraintreeService {
 
     }
 
-    public String parseWebhookNotification(String bt_signature, String bt_payload){
+    public WebhookNotification parseWebhookNotification(String bt_signature, String bt_payload){
 
         WebhookNotification webhookNotification = configuration.getGateway().webhookNotification().parse(bt_signature,bt_payload);
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
-        String date = dateFormat.format(webhookNotification.getTimestamp().getTime());
-
-        String message = "Date: "+ date + " **** Type: " + webhookNotification.getKind();
-
-        return message;
+        return webhookNotification;
     }
 
     ////////////////////////////////////////////Marketplaces///////////////////////////////////////////

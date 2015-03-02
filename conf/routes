@@ -11,20 +11,27 @@ GET         /paypal-only                                 controllers.Application
 GET         /custom                                      controllers.Application.customCreditCardForm()
 GET         /authcap                                     controllers.Application.authorisationAndCapture()
 GET         /dropin                                      controllers.Application.dropIn()
-GET         /update-customer                             controllers.CustomerController.updateCustomer()
-GET         /customer-list                               controllers.CustomerController.showCustomerList()
 GET         /onboarding                                  controllers.Application.submerchantOnboardingPage()
 GET         /index/payment-method/create                 controllers.Application.renderCreatePaymentMethodPage()
 
+# Customer management endpoints
+GET         /customer/update                             controllers.CustomerController.updateCustomer()
+GET         /customer/list                               controllers.CustomerController.showCustomerList()
+POST        /gateway/customer/create                     controllers.CustomerController.createCustomer()
+
 # Webhooks endpoints
 GET         /webhooks                                    controllers.WebhooksController.initialSetup(bt_challenge:String)
-POST        /webhooks                                    controllers.WebhooksController.listener()
+POST        /webhooks                                    controllers.WebhooksController.genericListener()
 
-# Gateway endpoints
+GET         /webhook/subscriptions                       controllers.WebhooksController.initialSetup(bt_challenge)
+POST        /webhook/subscriptions                       controllers.WebhooksController.subscriptionsListener()
+
+
+# Payment Method endpoints
 POST        /gateway/payment-method/create               controllers.PaymentMethodController.createPaymentMethod()
 
 # Maketplace endpoints
-GET         /marketplace/onboard                         controllers.MarketplaceController.createSubmerchantAccount()
+POST        /marketplace/submerchant/create              controllers.MarketplaceController.createSubmerchantAccount()
 
 # Sandbox Endpoints for client tokens
 GET         /sandbox/client_token/:customerId            controllers.Application.sandboxClientToken(customerId:String)
@@ -33,23 +40,15 @@ GET         /existingclient                              controllers.Application
 # Production Endpoints for client tokens
 GET         /production/client_token/:customerId         controllers.Application.productionClientToken(customerId:String)
 
-# Sandbox use case endpoints
-POST        /new-single-payment                          controllers.Application.newSinglePayment()
-POST        /new-future-payment                          controllers.Application.newFuturePayment()
-POST        /createAuth                                  controllers.Application.newAuthorisation()
+# Transaction Endpoints
+POST        /gateway/transaction/create                  controllers.TransactionController.create()
+POST        /sandbox/process-mobile-payment              controllers.TransactionController.sandboxProcessMobilePayment()
+POST        /production/process-mobile-payment           controllers.TransactionController.productionProcessMobilePayment()
+POST        /createAuth                                  controllers.TransactionController.newAuthorisation()
 POST        /captureAuth                                 controllers.Application.captureAuthorisation()
 GET         /voidAuth                                    controllers.Application.voidAuthorisation()
 GET         /clone-transaction                           controllers.Application.cloneTransaction()
-POST        /createcustomer                              controllers.CustomerController.createCustomer()
-POST        /sandbox/process-mobile-payment              controllers.Application.sandboxProcessMobilePayment()
 GET         /transaction-search                          controllers.Application.transactionSearch()
-
-
-
-# Production use case endpoints
-POST        /production/process-mobile-payment           controllers.Application.productionProcessMobilePayment()
-
-# Refunds
 #GET         /fullrefund                                  controllers.Application.Refund()
 
 # Javascript routing for AJAX call

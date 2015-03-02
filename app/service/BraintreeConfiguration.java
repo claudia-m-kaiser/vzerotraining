@@ -25,9 +25,9 @@ public class BraintreeConfiguration {
     private String sandboxPublic_Key = "fwfd7s4vnjd4v76x";
     private String sandboxPrivate_Key = "69da086845118cb5d5f1ca3601ec8ce5";
 
-    private String productionMerchant_ID = "rg2nptnfvgj9k57h";
-    private String productionPublic_Key = "w9knwng3vbg9d546";
-    private String productionPrivate_Key = "f69735ef2fdad381a8b668bb862fe520";
+    private String productionMerchant_ID = "";
+    private String productionPublic_Key = "";
+    private String productionPrivate_Key = "";
 
     private BraintreeGateway gateway;
 

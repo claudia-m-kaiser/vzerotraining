@@ -20,7 +20,7 @@ public class Application extends Controller {
     protected static BraintreeService sandboxBtService = new BraintreeService(new BraintreeConfiguration(BraintreeEnvironment.Sandbox));
     protected static BraintreeService productionBtService = new BraintreeService(new BraintreeConfiguration(BraintreeEnvironment.Production));
 
-    protected static BraintreeService currService = productionBtService;
+    protected static BraintreeService currService = sandboxBtService;
 
     public static Result index() {
         String token = currService.GetToken();
@@ -96,86 +96,10 @@ public class Application extends Controller {
 
     }
 
-    public static Result newSinglePayment(){
-
-        final Map<String, String[]> values = request().body().asFormUrlEncoded();
-
-        String nonce = values.get("payment_method_nonce")[0].toString();
-
-        // Capturing the funds using the nonce received from the client
-
-        BraintreePayment braintreePayment = sandboxBtService.CreatePaymentWithNonce(nonce);
-        
-        sandboxBtService.submitPaymentForSettlement(braintreePayment.getTransactionID());
-
-        return ok(thankyou.render(braintreePayment.getTransactionID()));
-    }
-
-    public static Result newFuturePayment(){
-
-        final Map<String, String[]> values = request().body().asFormUrlEncoded();
-
-        String nonce = values.get("payment_method_nonce")[0].toString();
-        String firstName = "Dani";
-        String lastName = "Rivera";
-        String email = "dani.rivera@example.com";
-
-        //Charging a new customer and storing their payment method in the vault
-
-        BraintreePayment braintreePayment = sandboxBtService.CreatePaymentWithNonce(nonce);
-
-        //BraintreePayment braintreePayment = sandboxBtService.CreatePaymentForNewCustomerAndAddToVault(nonce, firstName, lastName, email);
-
-        return ok(thankyou.render(braintreePayment.getTransactionID()));
-    }
-
-    public static Result sandboxProcessMobilePayment(){
-        return processMobilePayment(sandboxBtService);
-    }
-
-    public static Result productionProcessMobilePayment() {
-        return processMobilePayment(productionBtService);
-    }
-
-    private static Result processMobilePayment(BraintreeService service){
-
-        String nonce = request().body().asJson().findValue("payment_method_nonce").asText();
-
-        //Charging a new customer and storing their payment method in the vault
-
-        BraintreePayment braintreePayment = service.CreatePaymentWithNonce(nonce);
-
-        String transactionID;
-
-        ObjectNode result = Json.newObject();
-
-        if(braintreePayment == null) {
-            result.put("status", "KO");
-            result.put("message", "Could not process payment");
-            return badRequest(result);
-        } else {
-            transactionID  = braintreePayment.getTransactionID();
-            result.put("status", "OK");
-            result.put("transaction_id", transactionID);
-            return ok(result);
-        }
-    }
-
     public static Result renderCreatePaymentMethodPage(){
 
         String token = session("token");
         return ok(paymentmethodcreate.render(token));
-    }
-
-    public static Result newAuthorisation(){
-
-        final Map<String, String[]> values = request().body().asFormUrlEncoded();
-        String nonce = values.get("payment_method_nonce")[0].toString();
-
-        // Capturing the funds using the nonce received from the client
-        BraintreePayment braintreePayment = sandboxBtService.CreatePaymentWithNonce(nonce);
-
-        return ok(braintreePayment.getTransactionID());
     }
 
     public static Result captureAuthorisation(){
@@ -237,7 +161,7 @@ public class Application extends Controller {
         return ok(
                 Routes.javascriptRouter("jsRoutes",
                         // Routes
-                        controllers.routes.javascript.Application.newAuthorisation(),
+                        controllers.routes.javascript.TransactionController.newAuthorisation(),
                         controllers.routes.javascript.Application.captureAuthorisation(),
                         controllers.routes.javascript.Application.voidAuthorisation(),
                         controllers.routes.javascript.CustomerController.createCustomer()

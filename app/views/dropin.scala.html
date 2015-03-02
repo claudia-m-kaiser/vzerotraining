@@ -10,16 +10,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     </head>
     <body>
-        <script src="https://js.braintreegateway.com/v2/braintree.js"></script>
         <div class="container marketing">
             <div href="#payment" id="payment" class="row">
-                <div class="col-md-8 text-left">
-                    <form role="form" id="checkout" action ="/new-single-payment" method="post">
-
-                        <p>Click the PayPal button or enter your card details:</p>
-                        <div class="form-group">
-                            <div class="input-group" id="dropin-ui"></div>
-                        </div>
+                <div class="col-md-8 text-left"><br>
+                    <form id="checkout" action ="/gateway/transaction/create" method="post">
+                        <input type="hidden" name="store_in_vault" id="store_in_vault" value="false">
+                        <div id="dropin-container"></div>
                         <input type="submit" name="Pay" id="Pay" value="Pay" class="btn btn-large btn-primary pull-left">
                     </form>
                 </div>
@@ -27,18 +23,20 @@
         </div>
 
 
-        <script>
+        <script type="text/javascript" >
 
         braintree.setup("@Token", "dropin", {
-        container: "dropin-ui",
-        paypal: {
-        displayName: "TestMerchant",
-        singleUse : true
-        }
+            container: "dropin-container",
+            paypal: {
+                displayName: "TestMerchant",
+                singleUse : true
+                }
 
         });
 
         </script>
+        <script type="text/javascript" src="https://js.braintreegateway.com/v2/braintree.js"></script>
+
     </body>
 
 </html>

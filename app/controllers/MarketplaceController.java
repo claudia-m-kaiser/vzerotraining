@@ -25,9 +25,9 @@ public class MarketplaceController extends Application {
         submerchant.put("Locality", values.get("Locality")[0].toString());
         submerchant.put("Region", values.get("Region")[0].toString());
         submerchant.put("PostCode", values.get("PostCode")[0].toString());
-        submerchant.put("Phone", values.get("Phone")[0].toString());        submerchant.put("FirstName", values.get("FirstName")[0].toString());
-        submerchant.put("FundingDescriptor", values.get("FundingDescriptor")[0].toString());
-        submerchant.put("FundingEmail", values.get("FundingEmail")[0].toString());
+        submerchant.put("Phone", values.get("Phone")[0].toString());
+        submerchant.put("FundingDescriptor", "Email");
+        submerchant.put("FundingEmail", values.get("Email")[0].toString());
         submerchant.put("MerchantId", values.get("MerchantId")[0].toString());
 
         currService.onboardSubmerchantAccount(submerchant);
