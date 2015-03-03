@@ -4,7 +4,7 @@
 
 <html>
     <head>
-        <title>Customer List</title>
+        <title>Settlement Batch Summary</title>
         <link href="/assets/stylesheets/bootstrap.min.css" rel="stylesheet">
         <link href="/assets/stylesheets/styles.css" rel="stylesheet">
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,21 +14,21 @@
             <thead>
                 <tr>
                     <th>Id</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Email</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Amount</th>
+                    <th>Currency</th>
                     <th>Created Date</th>
-                    <th>Edit</th>
                 </tr></thead>
             <tbody>
             @for(record <- records) {
                 <tr>
                     <td>@record.get("id")</td>
-                    <td>@record.get("first_name")</td>
-                    <td>@record.get("last_name")</td>
-                    <td>@record.get("email")</td>
+                    <td>@record.get("type")</td>
+                    <td>@record.get("status")</td>
+                    <td>@record.get("amount")</td>
+                    <td>@record.get("currency")</td>
                     <td>@record.get("created_date")</td>
-                    <td><button class="btn btn-large"> Edit</button></td>
                 </tr>
             }
             </tbody>

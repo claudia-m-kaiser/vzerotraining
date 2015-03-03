@@ -2,13 +2,12 @@ package service;
 
 import com.braintreegateway.*;
 import model.BraintreeCustomer;
-import model.BraintreePayment;
 import com.braintreegateway.WebhookNotification;
 import play.Logger;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.HashMap;
+import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -68,6 +67,12 @@ public class BraintreeService {
         return configuration.getGateway().customer().find(customerId);
     }
 
+    public ResourceCollection<Customer> getCustomerList(){
+        return configuration.getGateway().customer().all();
+    }
+
+    ///////////////////////////////////////Transactions////////////////////////////////////
+
     public Transaction createTransactionWithNonce(String nonce, boolean storeInVault) {
 
         TransactionRequest transactionRequest = new TransactionRequest()
@@ -115,10 +120,6 @@ public class BraintreeService {
         }
     }
 
-    public ResourceCollection<Customer> getCustomerList(){
-        return configuration.getGateway().customer().all();
-    }
-
     public boolean voidAuthorisation(String transactionId){
 
         Result<Transaction> transactionResult = configuration.getGateway().transaction().voidTransaction(transactionId);
@@ -150,8 +151,6 @@ public class BraintreeService {
         return result.getTransaction();
     }
 
-
-
     public void createPaymentMethodForExistingCustomer(String customerId, String nonce){
 
         PaymentMethodRequest request = new PaymentMethodRequest()
@@ -168,8 +167,32 @@ public class BraintreeService {
 
     }
 
-    ////////////////////////////////////////////Webhooks///////////////////////////////////////////
+    public ResourceCollection<Transaction> getTransactionList(){
 
+        TransactionSearchRequest request = new TransactionSearchRequest()
+                .settledAt()
+                .lessThanOrEqualTo(Calendar.getInstance());
+
+        ResourceCollection<Transaction> collection = configuration.getGateway().transaction().search(request);
+
+        return collection;
+    }
+
+    ////////////////////////////////////////////Subscription///////////////////////////////////////////
+
+    public Subscription createSubscription(String token, String planId){
+
+        SubscriptionRequest subscriptionRequest = new SubscriptionRequest()
+                .paymentMethodToken(token)
+                .planId(planId)
+                .trialPeriod(false);
+
+        Result<Subscription> result = configuration.getGateway().subscription().create(subscriptionRequest);
+
+        return result.getTarget();
+    }
+
+    ////////////////////////////////////////////Webhooks///////////////////////////////////////////
 
     public String getWebhookVerificationResponse(String btChallenge){
         return configuration.getGateway().webhookNotification().verify(btChallenge);
@@ -217,4 +240,20 @@ public class BraintreeService {
         Logger.debug(result.getMessage());
     }
 
+    ////////////////////////////////////////////Reporting///////////////////////////////////////////
+
+    public List<Map<String,String>> generateSettlementBatch(Calendar date){
+
+        Result<SettlementBatchSummary> result = configuration.getGateway()
+                .settlementBatchSummary()
+                .generate(date);
+
+        if (result.isSuccess()) {
+            List<Map<String,String>> records = result.getTarget().getRecords();
+            return records;
+        }else{
+            return null;
+        }
+
+    }
 }

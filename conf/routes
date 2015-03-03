@@ -34,11 +34,11 @@ POST        /gateway/payment-method/create               controllers.PaymentMeth
 POST        /marketplace/submerchant/create              controllers.MarketplaceController.createSubmerchantAccount()
 
 # Sandbox Endpoints for client tokens
-GET         /sandbox/client_token/:customerId            controllers.Application.sandboxClientToken(customerId:String)
+GET         /sandbox/client_token                        controllers.Application.sandboxClientToken(customerId:String)
 GET         /existingclient                              controllers.Application.existingClient()
 
 # Production Endpoints for client tokens
-GET         /production/client_token/:customerId         controllers.Application.productionClientToken(customerId:String)
+GET         /production/client_token/                    controllers.Application.productionClientToken(customerId:String)
 
 # Transaction Endpoints
 POST        /gateway/transaction/create                  controllers.TransactionController.create()
@@ -48,8 +48,14 @@ POST        /createAuth                                  controllers.Transaction
 POST        /captureAuth                                 controllers.Application.captureAuthorisation()
 GET         /voidAuth                                    controllers.Application.voidAuthorisation()
 GET         /clone-transaction                           controllers.Application.cloneTransaction()
-GET         /transaction-search                          controllers.Application.transactionSearch()
 #GET         /fullrefund                                  controllers.Application.Refund()
+
+# Subscription Endpoints
+GET         /subscription                                controllers.SubscriptionController.subscribe()
+
+# Reporting
+GET         /reporting/transaction                       controllers.ReportingController.transactionSummary()
+GET         /reporting/settlement                        controllers.ReportingController.settlementBatch()
 
 # Javascript routing for AJAX call
 GET         /assets/javascripts/routes                   controllers.Application.javascriptRoutes()

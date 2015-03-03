@@ -9,6 +9,9 @@ import play.mvc.Result;
 import views.html.customerlist;
 import views.html.customerupdate;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -74,17 +77,20 @@ public class CustomerController extends Application {
     }
 
     public static Result showCustomerList(){
-/*
-        ObjectNode customerList = Json.newObject();
 
-        int index = 0;
         ResourceCollection<Customer> collection = currService.getCustomerList();
+        List<Map<String,String>> records = new ArrayList();
+
         for (Customer customer: collection){
-            index++;
-            Logger.debug("Customer " + index + ": " + customer.getId());
+            Map<String,String> record = new HashMap<String,String>();
+            record.put("id", customer.getId());
+            record.put("first_name", customer.getFirstName());
+            record.put("last_name", customer.getLastName());
+            record.put("email", customer.getEmail());
+            record.put("created_date", customer.getCreatedAt().toInstant().toString());
+            records.add(record);
         }
-*/
-        return ok(customerlist.render());
+        return ok(customerlist.render(records));
     }
 
 }

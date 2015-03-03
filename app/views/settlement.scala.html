@@ -1,0 +1,41 @@
+@(records:java.util.List[java.util.Map[String,String]])
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Settlement Batch Summary</title>
+        <link href="/assets/stylesheets/bootstrap.min.css" rel="stylesheet">
+        <link href="/assets/stylesheets/styles.css" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    </head>
+    <body>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Kind</th>
+                    <th>Count</th>
+                    <th>Merchant Account Id</th>
+                    <th>Card Type</th>
+                    <th>Amount Settled</th>
+                </tr></thead>
+            <tbody>
+                @for(record <- records) {
+                    <tr>
+                        <td>@record.get("kind")</td>
+                        <td>@record.get("count")</td>
+                        <td>@record.get("merchant_account_id")</td>
+                        <td>@record.get("card_type")</td>
+                        <td>@record.get("amount_settled")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <script>
+
+
+        </script>
+    </body>
+
+</html>

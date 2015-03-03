@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import play.mvc.Result;
 import service.BraintreeConfiguration;
 import service.BraintreeConfiguration.BraintreeEnvironment;
-import model.BraintreePayment;
 import service.BraintreeService;
 import play.Routes;
 import play.libs.Json;
@@ -135,11 +134,6 @@ public class Application extends Controller {
 
         return ok();
 
-    }
-
-    public static Result transactionSearch(){
-
-        return ok();
     }
 
     public static Result dropIn(){

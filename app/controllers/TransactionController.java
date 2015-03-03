@@ -1,11 +1,16 @@
 package controllers;
+import com.braintreegateway.ResourceCollection;
 import com.braintreegateway.Transaction;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import play.Logger;
 import play.libs.Json;
 import play.mvc.Result;
 import service.BraintreeService;
-import views.html.thankyou;
+import views.html.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -17,6 +22,7 @@ public class TransactionController extends Application{
     public static enum TransactionType {
         Sale,Authorisation,Capture,Void,Refund;
     }
+
 
 ////////////////////////////// Web Transaction Processing //////////////////////////////////
 

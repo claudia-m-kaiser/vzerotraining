@@ -48,9 +48,7 @@ public class WebhooksController extends Application {
         final Map<String, String[]> webhook = request().body().asFormUrlEncoded();
         WebhookNotification notification = getNotification(webhook);
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
-
-        String message = "Date: "+ dateFormat.format(notification.getTimestamp().getTime())
+        String message = "Date: "+ notification.getTimestamp().toInstant().toString()
                 + " **** Subcription Id: " + notification.getSubscription().getId();
 
         writeToWebhookLogFile(message);
