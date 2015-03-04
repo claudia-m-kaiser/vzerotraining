@@ -23,7 +23,7 @@ POST        /gateway/customer/create                     controllers.CustomerCon
 GET         /webhooks                                    controllers.WebhooksController.initialSetup(bt_challenge:String)
 POST        /webhooks                                    controllers.WebhooksController.genericListener()
 
-GET         /webhook/subscriptions                       controllers.WebhooksController.initialSetup(bt_challenge)
+GET         /webhook/subscriptions                       controllers.WebhooksController.initialSetup(bt_challenge:String)
 POST        /webhook/subscriptions                       controllers.WebhooksController.subscriptionsListener()
 
 

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import play.Logger;
 import play.libs.Json;
 import play.mvc.Result;
+import play.mvc.Http.Request;
 import service.BraintreeService;
 import views.html.*;
 
@@ -28,6 +29,7 @@ public class TransactionController extends Application{
 
     public static Result create(){
 
+        Request request = request();
         final Map<String, String[]> values = request().body().asFormUrlEncoded();
 
         String nonce = values.get("payment_method_nonce")[0].toString();
@@ -37,7 +39,17 @@ public class TransactionController extends Application{
 
         Transaction transaction = currService.createTransactionWithNonce(nonce, storeInVault);
 
-        return ok("Transaction ID: " + transaction.getId());
+        ObjectNode result = Json.newObject();
+
+        if(transaction == null) {
+            result.put("status", "KO");
+            result.put("message", "Could not process payment");
+            return badRequest(result);
+        } else {
+            result.put("status", "OK");
+            result.put("transaction_id", transaction.getId());
+            return ok(result);
+        }
     }
 
     public static Result newAuthorisation(){
