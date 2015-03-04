@@ -25,7 +25,7 @@ public class TransactionController extends Application{
     }
 
 
-////////////////////////////// Web Transaction Processing //////////////////////////////////
+//////////////////////////////  Transaction Processing //////////////////////////////////
 
     public static Result create(){
 
@@ -62,39 +62,5 @@ public class TransactionController extends Application{
 
         return ok(transaction.getId());
     }
-
-////////////////////////////// Mobile Transaction Processing //////////////////////////////////
-
-
-    public static Result sandboxProcessMobilePayment(){
-        return processMobilePayment(sandboxBtService);
-    }
-
-    public static Result productionProcessMobilePayment() {
-        return processMobilePayment(productionBtService);
-    }
-
-    private static Result processMobilePayment(BraintreeService service){
-
-        String nonce = request().body().asJson().findValue("payment_method_nonce").asText();
-
-        //Charging a new customer and storing their payment method in the vault
-
-        Transaction transaction = service.createTransactionWithNonce(nonce, true);
-
-        ObjectNode result = Json.newObject();
-
-        if(transaction == null) {
-            result.put("status", "KO");
-            result.put("message", "Could not process payment");
-            return badRequest(result);
-        } else {
-            result.put("status", "OK");
-            result.put("transaction_id", transaction.getId());
-            return ok(result);
-        }
-    }
-
-
 
 }
