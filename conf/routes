@@ -42,8 +42,6 @@ GET         /production/client_token/                    controllers.Application
 
 # Transaction Endpoints
 POST        /gateway/transaction/create                  controllers.TransactionController.create()
-POST        /sandbox/process-mobile-payment              controllers.TransactionController.sandboxProcessMobilePayment()
-POST        /production/process-mobile-payment           controllers.TransactionController.productionProcessMobilePayment()
 POST        /createAuth                                  controllers.TransactionController.newAuthorisation()
 POST        /captureAuth                                 controllers.Application.captureAuthorisation()
 GET         /voidAuth                                    controllers.Application.voidAuthorisation()
